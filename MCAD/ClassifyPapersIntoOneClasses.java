@@ -26,7 +26,7 @@ import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
-public class ClassifyPapersIntoClasses {
+public class ClassifyPapersIntoOneClass {
 
 	public static class InputMapper extends Mapper<Object, Text, Text, Text> {
 
@@ -48,12 +48,21 @@ public class ClassifyPapersIntoClasses {
 			for (Text field: allFields) {
 				if (fieldCount.get(field) == null) {
 					fieldCount.put(field, 1);
-					context.write(paperID, field);
 				} else {
 					fieldCount.put(field, fieldCount.get(field) + 1);
 				}
 			}
 			
+			int maxValueInMap = (Collections.max(fieldCount.values()));  // This will return max value in the Hashmap
+	        for (Entry<Text, Integer> entry: fieldCount.entrySet()) {  // Iterate through hashmap
+	            if (entry.getValue() == maxValueInMap) {
+	            	context.write(paperID, entry.getKey());
+	                //System.out.println(entry.getKey());     // Print the key with max value
+	                break;
+	            }
+	        }
+			
+//			context.write(paperID, 1);
 		}
 	}
 
@@ -72,3 +81,46 @@ public class ClassifyPapersIntoClasses {
 		System.exit(job.waitForCompletion(true) ? 0 : 1);
 	}
 }
+
+/*
+
+INPUT
+
+0000004B	SE
+0000004B	SE
+0000004B	SE
+0000006A	PL
+00000118	ML
+00000118	ALGO
+00000148	ALGO
+00000166	SC
+0000016F	PL
+00000199	ML
+0000019E	NW
+0000019E	AI
+0000019E	SIM
+000001A1	SE
+000001A8	ARC
+000001E6	DB
+000001E6	SIM
+000001FF	BIO
+000001FF	BIO
+00000230	SC
+
+OUTPUT
+
+0000004B	SE
+0000006A	PL
+00000118	ALGO
+00000148	ALGO
+00000166	SC
+0000016F	PL
+00000199	ML
+0000019E	SIM
+000001A1	SE
+000001A8	ARC
+000001E6	SIM
+000001FF	BIO
+00000230	SC
+
+*/
