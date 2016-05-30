@@ -46,7 +46,7 @@ for line in lines:
 
 	metric_dict[(start_year, interval, comm, metric)] = value
 
-metrics = ['inwardness', 'cut', 'expansion', 'count']
+metrics = ['inwardness', 'cut', 'expansion', 'count', 'conductance']
 start_year = 1960
 end_year_plus_one = 2020
 interval = 1
