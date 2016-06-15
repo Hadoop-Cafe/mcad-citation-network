@@ -2,6 +2,7 @@ ODF1,2
 
 PaperAbout Entry
 
-TemoralStudy: Inward, Cut, Exp, Cond
+TemoralStudy: Inward, Cut, Exp, Cond, FOMD, ODF
 
 Filter
+
