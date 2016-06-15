@@ -6,3 +6,7 @@ TemoralStudy: Inward, Cut, Exp, Cond, FOMD, ODF
 
 Filter
 
+DataEntry
+-> Authors in PaperAbout
+-> AllAuthors
+-> FilteredAuthors
