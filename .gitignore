@@ -9,3 +9,7 @@ new/
 *.pyc
 
 utils/ScrapingAuthorNationality/outfiles
+
+workspace/
+
+*.csv
