@@ -1,48 +1,39 @@
-from URL import *
-from threading import Thread, Lock
-import os
+import urllib2
+import time
+from bs4 import BeautifulSoup
 import sys
 
-class Scrape(Thread):
+class URL:
 
-    def __init__(self, infile, outfile, lock):
-        Thread.__init__(self)
-        self.infile = infile
-        self.outfile = outfile
-        self.lock = lock
+    def __init__(self, url, authid):
+        self.url = url
+        self.authid = authid
+        proxy = urllib2.ProxyHandler({'http': 'iit2013204:404104211@172.31.1.6:8080'})
+        opener = urllib2.build_opener(proxy)
+        urllib2.install_opener(opener)
 
-    def run(self):
-        readFile = open(self.infile, 'r')
+    def fetch(self):
+        # print 'Attempting url fetch.'
+        OK = False
+        tries = 0
+        while not OK:
+            try:
+                response = urllib2.urlopen(self.url)
+                # print 'Success : ' + self.url
+                OK = True
+            except urllib2.HTTPError as e:
+                tries = tries + 1
+                if tries >= 256:
+                    return -1
+                # print 'Failure.\nAn HTTP error occured : ' + str(e.code)
+                # print 'Refetching : ' + self.url
+            time.sleep(2)
+        html = response.read()
 
-        count = 0
-        for line in readFile:
-            count = count + 1
-
-        readFile = open(self.infile, 'r')
-        i = 0;
-        for line in readFile:
-            i = i + 1
-            authorId = line[:line.find('\t')].strip()
-            authorName = line[line.find('\t') + 1:].strip()
-            surname = authorName[authorName.rfind(' ') + 1:].strip()
-            u = URL('http://forebears.io/surnames/' + surname, authorId)
-            self.outfile.write(authorId + '\t' + authorName + '\t' +str(u.fetch()) + '\n')
-            print 'Thread ' + self.infile[8:] + ' is ' + str(i * 100.0 / count) + '% completed..'
-# for x in range(1, 4):
-#   Scrape(x).start()
-
-def main():
-    # sys.stdout = open('outfiles/log', 'w')
-
-    outfile = open('outfiles/outfile', 'w');
-    lock = Lock()
-    threadList = []
-
-    infiles = os.listdir('infiles/')
-
-    for infile in infiles:
-        thr = Scrape('infiles/' + infile, outfile, lock).start()
-        threadList.append(thr)
-
-if __name__ == '__main__':
-    main()
+        try :
+            soup = BeautifulSoup(html, "html.parser")
+            tr = soup.find_all('tr')
+            td = tr[1].find('td')
+            return td.text
+        except:
+            return 'err'
